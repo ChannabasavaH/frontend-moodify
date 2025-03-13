@@ -20,7 +20,7 @@ const ReadyTune = () => {
                     Hit ‘Generate’ or ‘Explore’ to dive in the ocean of music tailored for your current mood.
                 </p>
                 <Link href={'/login'}>
-                    <button className='h-12 w-40 bg-black text-white text-center rounded-md'>
+                    <button className='h-12 w-40 bg-black text-white text-center rounded-md cursor-pointer'>
                         Let's Get Started
                     </button>
                 </Link>
