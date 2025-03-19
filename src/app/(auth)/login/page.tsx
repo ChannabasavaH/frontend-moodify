@@ -73,12 +73,12 @@ const Page = () => {
         localStorage.setItem('accessToken', res.data.accessToken);
       }
 
-      router.push('/analyze-emotion');
+      router.push('/dashboard');
     } catch (error: any) {
-      console.error("Error logging in:", error);
       if (error.response) {
         setErrors(error.response.data.message || "Login failed");
       }
+      console.error("Error logging in:", error);
     }
   }
 

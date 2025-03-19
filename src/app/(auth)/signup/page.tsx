@@ -60,7 +60,10 @@ const Page = () => {
       const res = await axios.post("http://localhost:8080/api/users/signup", data);
       console.log(res.data);
       router.push('/login');
-    } catch (error) {
+    } catch (error: any) {
+      if(error.response){
+        console.log("Server error: ", error.response.data);
+      }
       console.log("Error in signing up", error);
     }
   }
