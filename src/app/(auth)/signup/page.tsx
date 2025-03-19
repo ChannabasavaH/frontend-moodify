@@ -3,6 +3,13 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
+import { z } from 'zod';
+
+const signUpSchema = z.object({
+  username: z.string().min(3, "Username must be atleast 3 characters long"),
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(6, "Password must be atleast 6 characters long"),
+})
 
 interface UserData {
   username: string,
@@ -19,6 +26,7 @@ const Page = () => {
     email: "",
     password: "",
   })
+  const [errors, setErrors] = useState<{username?: string; email?: string; password?: string}>({})
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -36,6 +44,18 @@ const Page = () => {
 
   const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const result = signUpSchema.safeParse(user);
+    if (!result.success) {
+      const formattedErrors = result.error.flatten().fieldErrors;
+      setErrors({
+        username: formattedErrors.username?.[0],
+        email: formattedErrors.email?.[0],
+        password: formattedErrors.password?.[0],
+      });
+      return;
+    }
+
     try {
       const res = await axios.post("http://localhost:8080/api/users/signup", data);
       console.log(res.data);
@@ -62,6 +82,7 @@ const Page = () => {
             onChange={handleChange}
             required
           />
+          {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
         </div>
         <div className='w-full flex flex-col justify-center items-start gap-y-4'>
           <label htmlFor="email" className='text-xl'>Email</label>
@@ -74,6 +95,7 @@ const Page = () => {
             onChange={handleChange}
             required
           />
+          {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
         </div>
         <div className='w-full flex flex-col justify-center items-start gap-y-4'>
           <label htmlFor="password" className='text-xl'>Password</label>
@@ -86,6 +108,7 @@ const Page = () => {
             onChange={handleChange}
             required
           />
+          {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
         </div>
         <button className='hover:border-2 hover:border-white w-36 h-12 rounded-lg text-center text-lg cursor-pointer'>
           Submit

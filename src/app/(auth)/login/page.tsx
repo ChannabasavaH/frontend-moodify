@@ -3,6 +3,13 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
+import { z } from 'zod';
+
+
+const loginSchema = z.object({
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(6, "Password must be atleast 6 characters long"),
+})
 
 interface UserData {
   email: string,
@@ -22,7 +29,7 @@ const Page = () => {
     email: "",
     password: "",
   })
-  const [error, setError] = useState<string>("");
+  const [errors, setErrors] = useState<{email?: string; password?: string}>({})
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -39,7 +46,16 @@ const Page = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
+
+    const result = loginSchema.safeParse(user);
+    if (!result.success) {
+      const formattedErrors = result.error.flatten().fieldErrors;
+      setErrors({
+        email: formattedErrors.email?.[0],
+        password: formattedErrors.password?.[0],
+      });
+      return;
+    }
 
     try {
       const res = await axios.post<LoginResponse>(
@@ -53,20 +69,15 @@ const Page = () => {
         }
       );
 
-      console.log(res.data);
-
       if (res.data.accessToken) {
         localStorage.setItem('accessToken', res.data.accessToken);
-        console.log("Token stored in localStorage:", res.data.accessToken);
       }
 
       router.push('/analyze-emotion');
     } catch (error: any) {
       console.error("Error logging in:", error);
       if (error.response) {
-        setError(error.response.data.message || "Login failed");
-      } else {
-        setError("Network error. Please try again.");
+        setErrors(error.response.data.message || "Login failed");
       }
     }
   }
@@ -85,6 +96,7 @@ const Page = () => {
             value={user.email}
             onChange={handleChange}
             required />
+            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
         </div>
         <div className='w-full flex flex-col justify-center items-start gap-y-4'>
           <label htmlFor="password" className='text-xl'>Password</label>
@@ -94,6 +106,7 @@ const Page = () => {
             value={user.password}
             onChange={handleChange}
             required />
+            {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
         </div>
         <button className='hover:border-2 hover:border-white w-36 h-12 rounded-lg text-center text-lg cursor-pointer'>
           Submit
