@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import { z } from 'zod';
-
+import { setAccessToken } from '@/utils/auth';
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -30,6 +30,7 @@ const Page = () => {
     password: "",
   })
   const [errors, setErrors] = useState<{email?: string; password?: string}>({})
+  const [generalError, setGeneralError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -70,15 +71,14 @@ const Page = () => {
       );
 
       if (res.data.accessToken) {
-        localStorage.setItem('accessToken', res.data.accessToken);
+        setAccessToken(res.data.accessToken);
       }
 
       router.push('/dashboard');
     } catch (error: any) {
       if (error.response) {
-        setErrors(error.response.data.message || "Login failed");
+        setGeneralError(error.response.data.message || "Login failed");
       }
-      console.error("Error logging in:", error);
     }
   }
 
@@ -100,7 +100,7 @@ const Page = () => {
         </div>
         <div className='w-full flex flex-col justify-center items-start gap-y-4'>
           <label htmlFor="password" className='text-xl'>Password</label>
-          <input type="text" id='password'
+          <input type="password" id='password'
             className='w-full md:w-2/3 lg:w-4/5 p-2 rounded-md'
             placeholder='Enter your password'
             value={user.password}
@@ -108,6 +108,7 @@ const Page = () => {
             required />
             {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
         </div>
+        {generalError && <p className='text-center text-red-500 text-lg'>{generalError}</p>}
         <button className='hover:border-2 hover:border-white w-36 h-12 rounded-lg text-center text-lg cursor-pointer'>
           Submit
         </button>

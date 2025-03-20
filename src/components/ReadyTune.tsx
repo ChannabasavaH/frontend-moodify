@@ -19,7 +19,7 @@ const ReadyTune = () => {
                     Just a click separates you from your personalised playlist.
                     Hit ‘Generate’ or ‘Explore’ to dive in the ocean of music tailored for your current mood.
                 </p>
-                <Link href={'/login'}>
+                <Link href={'/signup'}>
                     <button className='h-12 w-40 bg-black text-white text-center rounded-md cursor-pointer'>
                         Let's Get Started
                     </button>
