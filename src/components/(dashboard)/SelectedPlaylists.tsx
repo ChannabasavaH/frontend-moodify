@@ -29,7 +29,7 @@ const SelectedPlaylist: React.FC<SelectedPlaylistProps> = ({ playlist }) => {
             </div>
           </div>
           <div className="w-full md:w-2/3">
-            <h3 className="text-xl font-semibold mb-2">{playlist.name}</h3>
+            <h3 className="text-xl font-semibold mb-2 text-black">{playlist.name}</h3>
             {playlist.description && (
               <p className="text-sm text-gray-600 mb-4">{playlist.description}</p>
             )}

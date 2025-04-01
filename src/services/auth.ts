@@ -30,7 +30,7 @@ api.interceptors.response.use(
 
       try {
         const response = await axios.post(
-          'http://localhost:8080/newaccesstoken',
+          'http://localhost:8080/api/users/newaccesstoken',
           {},
           { withCredentials: true }
         );
