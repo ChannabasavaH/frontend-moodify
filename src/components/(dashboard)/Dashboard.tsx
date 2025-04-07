@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import ImageCapture from './ImageCapture'
 import EmotionResults from './EmotionResults'
 import PlaylistsRecommendations from './PlaylistsRecommendations'
-import { EmotionAnalysis, PlaylistInfo, AnalysisResponse } from '@/types'
+import { AnalysisResponse } from '@/types'
 import { api } from '@/services/auth'
 import { AxiosError } from 'axios'
 

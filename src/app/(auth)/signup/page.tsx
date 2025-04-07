@@ -59,7 +59,7 @@ const Page = () => {
     try {
       const res = await axios.post("http://localhost:8080/api/users/signup", data);
       console.log(res.data);
-      router.push('/login');
+      router.push(`/verify?username=${user.username}`);
     } catch (error: any) {
       if(error.response){
         console.log("Server error: ", error.response.data);
