@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import InputOPT from "@/components/InputOTP";
 import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "react-toastify";
 
 const Page = () => {
   const [code, setCode] = useState("");
@@ -25,12 +26,33 @@ const Page = () => {
 
       console.log(res.data);
       router.push("/login");
+      toast.success("Email verified, successfully!", {
+        position: "bottom-left",
+        style: {
+          background: "#4CAF50",
+          color: "#fff",
+        },
+      });
     } catch (error: any) {
       if (error.response) {
         console.log("Server error: ", error.response.data?.message);
-        setError(error.response.data?.message)
+        setError(error.response.data?.message);
+        toast.error("Verification failed! Try again", {
+          position: "bottom-left",
+          style: {
+            background: "#f44336",
+            color: "#fff",
+          },
+        });
       } else {
         console.log("Error in verification", error.message);
+        toast.error("Verification failed! Try again", {
+          position: "bottom-left",
+          style: {
+            background: "#f44336",
+            color: "#fff",
+          },
+        });
       }
     }
   };
