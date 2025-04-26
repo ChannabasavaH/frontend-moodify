@@ -42,6 +42,7 @@ const PlaylistsRecommendations: React.FC<PlaylistsRecommendationsProps> = ({ loa
           {selectedPlaylist && (
             <SelectedPlaylist
               playlist={analysisResult.recommendedPlaylists.find(p => p.id === selectedPlaylist)!}
+              mood={analysisResult.dominant}
             />
           )}
         </div>
