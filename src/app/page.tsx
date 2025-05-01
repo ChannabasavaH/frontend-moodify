@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import WelcomeMoodify from "@/components/welcomeMoodify";
+import WelcomeMoodify from "@/components/WelcomeMoodify";
 import ReadyTune from "@/components/ReadyTune";
 
 export default function Home() {

@@ -1,11 +1,10 @@
-// app/favorites/[id]/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { api } from "@/services/auth";
 
-const PlaylistFavoritePage = () => {
+const PlaylistHistoryPage = () => {
   const { id } = useParams();
   const [playlist, setPlaylist] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,7 +12,7 @@ const PlaylistFavoritePage = () => {
   useEffect(() => {
     const fetchPlaylist = async () => {
       try {
-        const res = await api.get(`/api/favorites/${id}`);
+        const res = await api.get(`/api/history/${id}`);
         setPlaylist(res.data.playlist);
       } catch (err) {
         console.error("Error fetching playlist:", err);
@@ -67,4 +66,4 @@ const PlaylistFavoritePage = () => {
   );
 };
 
-export default PlaylistFavoritePage;
+export default PlaylistHistoryPage;

@@ -10,8 +10,8 @@ type Playlist = {
   imageUrl: string;
 };
 
-type Favorite = {
-  moodTag: string;
+type History = {
+  dominant: string;
   playlist: Playlist;
 };
 
@@ -24,16 +24,26 @@ const moodCategories = [
   { label: "Chill", value: "chill", emoji: "😌" },
 ];
 
-const Page = () => {
-  const [favorites, setFavorites] = useState<Favorite[]>([]);
+const HistoryPage = () => {
+  const [history, setHistory] = useState<History[]>([]);
   const [selectedMood, setSelectedMood] = useState("all");
   const router = useRouter();
 
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
-        const res = await api.get("/api/favorites");
-        setFavorites(res.data.favoritePlaylists);
+        const res = await api.get("/api/history");
+
+        const moodData = res.data.moodHistory;
+
+        const formatted: History[] = moodData.flatMap((entry: any) =>
+          entry.recommendedPlaylists.map((playlist: any) => ({
+            dominant: entry.dominant,
+            playlist: playlist,
+          }))
+        );
+
+        setHistory(formatted);
       } catch (err) {
         console.error("Failed to fetch favorites:", err);
       }
@@ -44,12 +54,12 @@ const Page = () => {
 
   const filtered =
     selectedMood === "all"
-      ? favorites
-      : favorites.filter((fav) => fav.moodTag === selectedMood);
+      ? history
+      : history.filter((his) => his.dominant === selectedMood);
 
   return (
     <div className="min-h-screen p-6 text-black bg-white">
-      <h1 className="text-3xl font-bold mb-6">🎵 Favorite Playlists</h1>
+      <h1 className="text-3xl font-bold mb-6">🎵 History</h1>
 
       {/* Mood Category Buttons */}
       <div className="flex flex-wrap gap-3 mb-8">
@@ -71,19 +81,19 @@ const Page = () => {
       {/* Playlist Cards */}
       {filtered.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {filtered.map((fav) => (
+          {filtered.map((his) => (
             <div
-              key={fav.playlist._id}
+              key={`${his.dominant}-${his.playlist._id}`}
               className="cursor-pointer border rounded-xl overflow-hidden shadow hover:shadow-xl transition"
-              onClick={() => router.push(`/favorites/${fav.playlist._id}`)}
+              onClick={() => router.push(`/history/${his.playlist._id}`)}
             >
               <img
-                src={fav.playlist.imageUrl}
-                alt={fav.playlist.name}
+                src={his.playlist.imageUrl}
+                alt={his.playlist.name}
                 className="w-full h-60 object-cover"
               />
               <div className="p-4">
-                <h2 className="text-lg font-semibold">{fav.playlist.name}</h2>
+                <h2 className="text-lg font-semibold">{his.playlist.name}</h2>
               </div>
             </div>
           ))}
@@ -97,4 +107,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default HistoryPage;
