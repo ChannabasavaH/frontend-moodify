@@ -1,21 +1,16 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "@/services/auth";
+import { useUser } from "@/context/userContext";
 
-type Playlist = {
-  _id: string;
-  name: string;
-  imageUrl: string;
+type MoodCategory = {
+  label: string;
+  value: string;
+  emoji: string;
 };
 
-type History = {
-  dominant: string;
-  playlist: Playlist;
-};
-
-const moodCategories = [
+const moodCategories: MoodCategory[] = [
   { label: "All", value: "all", emoji: "🌈" },
   { label: "Joy", value: "joy", emoji: "😊" },
   { label: "Sorrow", value: "sorrow", emoji: "😢" },
@@ -25,41 +20,17 @@ const moodCategories = [
 ];
 
 const HistoryPage = () => {
-  const [history, setHistory] = useState<History[]>([]);
+  const { history } = useUser();
   const [selectedMood, setSelectedMood] = useState("all");
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      try {
-        const res = await api.get("/api/history");
-
-        const moodData = res.data.moodHistory;
-
-        const formatted: History[] = moodData.flatMap((entry: any) =>
-          entry.recommendedPlaylists.map((playlist: any) => ({
-            dominant: entry.dominant,
-            playlist: playlist,
-          }))
-        );
-
-        setHistory(formatted);
-      } catch (err) {
-        console.error("Failed to fetch favorites:", err);
-      }
-    };
-
-    fetchFavorites();
-  }, []);
-
-  const filtered =
-    selectedMood === "all"
-      ? history
-      : history.filter((his) => his.dominant === selectedMood);
+  const filtered = selectedMood === "all"
+    ? history
+    : history.filter((his) => his.dominant === selectedMood);
 
   return (
     <div className="min-h-screen p-6 text-black bg-white">
-      <h1 className="text-3xl font-bold mb-6">🎵 History</h1>
+      <h1 className="text-3xl font-bold mb-6">🎵 Mood Playlist History</h1>
 
       {/* Mood Category Buttons */}
       <div className="flex flex-wrap gap-3 mb-8">
@@ -81,26 +52,29 @@ const HistoryPage = () => {
       {/* Playlist Cards */}
       {filtered.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {filtered.map((his) => (
-            <div
-              key={`${his.dominant}-${his.playlist._id}`}
-              className="cursor-pointer border rounded-xl overflow-hidden shadow hover:shadow-xl transition"
-              onClick={() => router.push(`/history/${his.playlist._id}`)}
-            >
-              <img
-                src={his.playlist.imageUrl}
-                alt={his.playlist.name}
-                className="w-full h-60 object-cover"
-              />
-              <div className="p-4">
-                <h2 className="text-lg font-semibold">{his.playlist.name}</h2>
+          {filtered.map((his) =>
+            his.recommendedPlaylists.map((playlist) => (
+              <div
+                key={`${his._id}-${playlist._id}`}
+                className="cursor-pointer border rounded-xl overflow-hidden shadow hover:shadow-xl transition"
+                onClick={() => router.push(`/history/${playlist._id}`)}
+              >
+                <img
+                  src={playlist.imageUrl}
+                  alt={playlist.name}
+                  className="w-full h-60 object-cover"
+                />
+                <div className="p-4">
+                  <h2 className="text-lg font-semibold">{playlist.name}</h2>
+                  <p className="text-sm text-gray-500">{his.dominant.toUpperCase()} • {his.recommendedMusicMood}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       ) : (
         <div className="text-center mt-20 text-lg text-gray-500">
-          <p className="text-black text-2xl">No favorite playlists found.</p>
+          <p className="text-black text-2xl">No recommended playlists found.</p>
         </div>
       )}
     </div>

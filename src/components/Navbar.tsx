@@ -2,46 +2,30 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { api } from "@/services/auth";
 import { setAccessToken } from "@/utils/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useUser } from "@/context/userContext";
+import { api } from "@/services/auth";
 
 const Navbar = () => {
-  const [token, setToken] = useState<string | null>(null);
-  const [dropDown, setDropDown] = useState<boolean>(false);
-  const [profilePic, setProfilePic] = useState<string>(
-    "https://github.com/shadcn.png"
-  );
+  const [dropDown, setDropDown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const res = await api.get("/api/users/me");
-        if (res.data.user.profilePhoto) {
-          setProfilePic(res.data.user.profilePhoto);
-        }
-      } catch (error) {
-        console.error("Failed to fetch user profile:", error);
-      }
-    };
+  const { user, fetchUser } = useUser();
 
-    if (localStorage.getItem("accessToken")) {
-      fetchUserProfile();
+  const handleLogout = async () => {
+    try {
+      await api.post("/api/users/logout");
+      setAccessToken(null);
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Logout failed", error);
     }
-  }, [token]);
+  };
 
-  useEffect(() => {
-    setToken(localStorage.getItem("accessToken"));
-
-    const handleTokenChange = () => {
-      setToken(localStorage.getItem("accessToken"));
-    };
-
-    window.addEventListener("accessTokenUpdated", handleTokenChange);
-    return () =>
-      window.removeEventListener("accessTokenUpdated", handleTokenChange);
-  }, []);
+  const handleDropDown = () => {
+    setDropDown((prev) => !prev);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -62,19 +46,7 @@ const Navbar = () => {
     };
   }, [dropDown]);
 
-  const handleDropDown = () => {
-    setDropDown((prev) => !prev);
-  };
-
-  const handleLogout = async () => {
-    try {
-      await api.post("/api/users/logout");
-      setAccessToken(null);
-      window.location.href = "/login";
-    } catch (error) {
-      console.error("Logout failed", error);
-    }
-  };
+  const isLoggedIn = !!user;
 
   return (
     <div className="w-full bg-black p-4 flex justify-between items-center">
@@ -83,7 +55,8 @@ const Navbar = () => {
           <p className="text-white text-lg font-bold">Moodify</p>
         </Link>
       </div>
-      {!token ? (
+
+      {!isLoggedIn ? (
         <div className="flex flex-row justify-center items-center gap-x-4">
           <Link href="/signup">
             <p className="text-white text-lg hover:text-gray-300 transition">
@@ -104,14 +77,14 @@ const Navbar = () => {
               className="cursor-pointer h-10 w-10 border-2 border-white hover:opacity-90 transition"
             >
               <AvatarImage
-                src={profilePic}
+                src={user?.profilePhoto}
                 alt="Profile"
                 width={40}
                 height={40}
                 className="object-cover"
               />
               <AvatarFallback className="text-lg bg-blue-600">
-                {profilePic === "https://github.com/shadcn.png" ? "U" : ""}
+                {user?.username?.charAt(0).toUpperCase() ?? "U"}
               </AvatarFallback>
             </Avatar>
           </div>

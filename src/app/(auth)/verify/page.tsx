@@ -19,12 +19,11 @@ const Page = () => {
     }
 
     try {
-      const res = await axios.post("http://localhost:8080/api/users/verify", {
+      await axios.post("http://localhost:8080/api/users/verify", {
         username,
         code: Number(code),
       });
 
-      console.log(res.data);
       router.push("/login");
       toast.success("Email verified, successfully!", {
         position: "bottom-left",

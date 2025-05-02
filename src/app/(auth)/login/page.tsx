@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { setAccessToken } from "@/utils/auth";
 import { toast } from "react-toastify";
+import { UserContext } from "@/context/userContext";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -24,6 +25,7 @@ interface LoginResponse {
 
 const Page = () => {
   const router = useRouter();
+  const { fetchUser } = useContext(UserContext) as any;
 
   const [user, setUser] = useState<UserData>({
     email: "",
@@ -33,6 +35,7 @@ const Page = () => {
     {}
   );
   const [generalError, setGeneralError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -49,6 +52,8 @@ const Page = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
+    setGeneralError(null);
 
     const result = loginSchema.safeParse(user);
     if (!result.success) {
@@ -57,6 +62,7 @@ const Page = () => {
         email: formattedErrors.email?.[0],
         password: formattedErrors.password?.[0],
       });
+      setIsLoading(false);
       return;
     }
 
@@ -73,17 +79,22 @@ const Page = () => {
       );
 
       if (res.data.accessToken) {
+        // Store the token in localStorage (this triggers the accessTokenUpdated event)
         setAccessToken(res.data.accessToken);
+        
+        // Wait a short moment for the context to update before navigating
+        // This ensures the navbar will have the updated state
+        setTimeout(() => {
+          router.push("/dashboard");
+          toast.success("Logged In, successfully!", {
+            position: "bottom-left",
+            style: {
+              background: "#4CAF50",
+              color: "#fff",
+            },
+          });
+        }, 100);
       }
-
-      router.push("/dashboard");
-      toast.success("Logged In, successfully!", {
-        position: "bottom-left",
-        style: {
-          background: "#4CAF50",
-          color: "#fff",
-        },
-      });
     } catch (error: any) {
       if (error.response) {
         setGeneralError(error.response.data.message || "Login failed");
@@ -95,6 +106,8 @@ const Page = () => {
           },
         });
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -119,6 +132,7 @@ const Page = () => {
             value={user.email}
             onChange={handleChange}
             required
+            disabled={isLoading}
           />
           {errors.email && (
             <p className="text-red-500 text-sm">{errors.email}</p>
@@ -136,6 +150,7 @@ const Page = () => {
             value={user.password}
             onChange={handleChange}
             required
+            disabled={isLoading}
           />
           {errors.password && (
             <p className="text-red-500 text-sm">{errors.password}</p>
@@ -144,8 +159,11 @@ const Page = () => {
         {generalError && (
           <p className="text-center text-red-500 text-lg">{generalError}</p>
         )}
-        <button className="hover:border-2 hover:border-white w-36 h-12 rounded-lg text-center text-lg cursor-pointer">
-          Submit
+        <button 
+          className="hover:border-2 hover:border-white w-36 h-12 rounded-lg text-center text-lg cursor-pointer disabled:opacity-50"
+          disabled={isLoading}
+        >
+          {isLoading ? "Logging in..." : "Submit"}
         </button>
       </form>
     </div>

@@ -1,21 +1,16 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "@/services/auth";
+import { useUser } from "@/context/userContext";
 
-type Playlist = {
-  _id: string;
-  name: string;
-  imageUrl: string;
+type MoodCategory = {
+  label: string;
+  value: string;
+  emoji: string;
 };
 
-type Favorite = {
-  moodTag: string;
-  playlist: Playlist;
-};
-
-const moodCategories = [
+const moodCategories: MoodCategory[] = [
   { label: "All", value: "all", emoji: "🌈" },
   { label: "Joy", value: "joy", emoji: "😊" },
   { label: "Sorrow", value: "sorrow", emoji: "😢" },
@@ -25,24 +20,11 @@ const moodCategories = [
 ];
 
 const Page = () => {
-  const [favorites, setFavorites] = useState<Favorite[]>([]);
-  const [selectedMood, setSelectedMood] = useState("all");
+  const { favorites } = useUser();
+  const [selectedMood, setSelectedMood] = useState<string>("all");
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      try {
-        const res = await api.get("/api/favorites");
-        setFavorites(res.data.favoritePlaylists);
-      } catch (err) {
-        console.error("Failed to fetch favorites:", err);
-      }
-    };
-
-    fetchFavorites();
-  }, []);
-
-  const filtered =
+  const filteredFavorites =
     selectedMood === "all"
       ? favorites
       : favorites.filter((fav) => fav.moodTag === selectedMood);
@@ -69,9 +51,9 @@ const Page = () => {
       </div>
 
       {/* Playlist Cards */}
-      {filtered.length > 0 ? (
+      {filteredFavorites.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {filtered.map((fav) => (
+          {filteredFavorites.map((fav) => (
             <div
               key={fav.playlist._id}
               className="cursor-pointer border rounded-xl overflow-hidden shadow hover:shadow-xl transition"

@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ToastContainer } from "react-toastify";
+import { UserProvider } from "@/context/userContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,22 +29,24 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body>
-        <div>
-          <Navbar />
-        </div>
-        {children}
-        <ToastContainer
-          position="bottom-left"
-          autoClose={2000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          pauseOnHover
-          theme="dark"
-        />
-        <div>
-          <Footer />
-        </div>
+        <UserProvider>
+          <div>
+            <Navbar />
+          </div>
+          {children}
+          <ToastContainer
+            position="bottom-left"
+            autoClose={2000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            pauseOnHover
+            theme="dark"
+          />
+          <div>
+            <Footer />
+          </div>
+        </UserProvider>
       </body>
     </html>
   );
