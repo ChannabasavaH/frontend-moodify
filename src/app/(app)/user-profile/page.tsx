@@ -185,7 +185,7 @@ const Page = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full ${isSubmitting ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"} text-white py-2 rounded-md transition flex items-center justify-center`}
+            className={`w-full ${isSubmitting ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"} text-white py-2 rounded-md transition flex items-center justify-center cursor-pointer`}
           >
             {isSubmitting ? (
               <>

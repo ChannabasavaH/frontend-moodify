@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { setAccessToken } from "@/utils/auth";
 import { toast } from "react-toastify";
-import { UserContext } from "@/context/userContext";
+import { FaRegEyeSlash, FaRegEye } from "react-icons/fa";
+
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -25,7 +26,6 @@ interface LoginResponse {
 
 const Page = () => {
   const router = useRouter();
-  const { fetchUser } = useContext(UserContext) as any;
 
   const [user, setUser] = useState<UserData>({
     email: "",
@@ -36,6 +36,7 @@ const Page = () => {
   );
   const [generalError, setGeneralError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -81,7 +82,7 @@ const Page = () => {
       if (res.data.accessToken) {
         // Store the token in localStorage (this triggers the accessTokenUpdated event)
         setAccessToken(res.data.accessToken);
-        
+
         // Wait a short moment for the context to update before navigating
         // This ensures the navbar will have the updated state
         setTimeout(() => {
@@ -97,7 +98,7 @@ const Page = () => {
       }
     } catch (error: any) {
       if (error.response) {
-        setGeneralError(error.response.data.message || "Login failed");
+        setGeneralError(error.response.data.message ?? "Login failed");
         toast.error("Logged In failed! Try again", {
           position: "bottom-left",
           style: {
@@ -112,60 +113,96 @@ const Page = () => {
   };
 
   return (
-    <div className="w-full min-h-screen flex justify-center items-center bg-white p-2">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full h-full md:w-1/2 md:h-1/2 bg-black flex flex-col justify-center items-center gap-y-8 p-8 rounded-md"
-      >
-        <h1 className="text-4xl" style={{ fontFamily: "jua, sans-serif" }}>
-          Login
-        </h1>
-        <div className="w-full flex flex-col justify-center items-start gap-y-4">
-          <label htmlFor="email" className="text-xl">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            className="w-full md:w-2/3 lg:w-4/5 p-2 rounded-md"
-            placeholder="Enter your email"
-            value={user.email}
-            onChange={handleChange}
-            required
-            disabled={isLoading}
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email}</p>
-          )}
+    <div className="w-full min-h-screen flex justify-center items-center bg-white p-4">
+      <div className="w-full max-w-md transition-all duration-300 hover:translate-y-[-8px]">
+        <div className="bg-black text-white rounded-xl shadow-2xl p-8 transition-all duration-300 hover:shadow-[0_20px_30px_rgba(0,0,0,0.2)]">
+          <div className="flex flex-col items-center mb-8">
+            <h1
+              className="text-4xl font-bold mb-2"
+              style={{ fontFamily: "jua, sans-serif" }}
+            >
+              Login
+            </h1>
+            <div className="w-16 h-1 bg-white rounded-full"></div>
+          </div>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-6">
+              <label htmlFor="email" className="block text-lg mb-2 font-medium">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-white text-white"
+                placeholder="Enter your email"
+                value={user.email}
+                onChange={handleChange}
+                disabled={isLoading}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+              )}
+            </div>
+
+            <div className="mb-8 relative">
+              <label
+                htmlFor="password"
+                className="block text-lg mb-2 font-medium"
+              >
+                Password
+              </label>
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-white text-white pr-12"
+                placeholder="Enter your password"
+                value={user.password}
+                onChange={handleChange}
+                disabled={isLoading}
+              />
+
+              {/* Eye Icon */}
+              <div
+                className="absolute right-3 top-[70%] translate-y-[-50%] cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <FaRegEye size={20} color="#fff" />
+                ) : (
+                  <FaRegEyeSlash size={20} color="#fff" />
+                )}
+              </div>
+
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+              )}
+            </div>
+
+            {generalError && (
+              <div className="mb-6">
+                <p className="text-center text-red-500 text-lg">
+                  {generalError}
+                </p>
+              </div>
+            )}
+
+            <div className="flex justify-center">
+              <button
+                className="bg-white text-black py-3 px-8 rounded-lg font-medium text-lg transition-all duration-300 hover:bg-gray-200 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 cursor-pointer"
+                disabled={isLoading}
+              >
+                {isLoading ? "Logging in..." : "Submit"}
+              </button>
+            </div>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-gray-400 hover:text-white transition-colors duration-300 cursor-pointer">
+              Forgot password?
+            </p>
+          </div>
         </div>
-        <div className="w-full flex flex-col justify-center items-start gap-y-4">
-          <label htmlFor="password" className="text-xl">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            className="w-full md:w-2/3 lg:w-4/5 p-2 rounded-md"
-            placeholder="Enter your password"
-            value={user.password}
-            onChange={handleChange}
-            required
-            disabled={isLoading}
-          />
-          {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password}</p>
-          )}
-        </div>
-        {generalError && (
-          <p className="text-center text-red-500 text-lg">{generalError}</p>
-        )}
-        <button 
-          className="hover:border-2 hover:border-white w-36 h-12 rounded-lg text-center text-lg cursor-pointer disabled:opacity-50"
-          disabled={isLoading}
-        >
-          {isLoading ? "Logging in..." : "Submit"}
-        </button>
-      </form>
+      </div>
     </div>
   );
 };

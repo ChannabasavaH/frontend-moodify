@@ -5,6 +5,9 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { toast } from "react-toastify";
+import Link from "next/link";
+import { FaRegEyeSlash, FaRegEye } from "react-icons/fa";
+
 
 const signUpSchema = z.object({
   username: z.string().min(3, "Username must be atleast 3 characters long"),
@@ -31,6 +34,7 @@ const Page = () => {
     email?: string;
     password?: string;
   }>({});
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -86,69 +90,99 @@ const Page = () => {
   };
 
   return (
-    <div className="w-full min-h-screen flex justify-center items-center bg-white p-2">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full h-full md:w-1/2 md:h-1/2 bg-black flex flex-col justify-center items-center gap-y-8 p-8 rounded-md"
-      >
-        <h1 className="text-4xl" style={{ fontFamily: "jua, sans-serif" }}>
-          Sign Up
-        </h1>
-        <div className="w-full flex flex-col justify-center items-start gap-y-4">
-          <label htmlFor="username" className="text-xl">
-            Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            className="w-full md:w-2/3 lg:w-4/5 p-2 rounded-md"
-            placeholder="Enter your username"
-            value={user.username}
-            onChange={handleChange}
-            required
-          />
-          {errors.username && (
-            <p className="text-red-500 text-sm">{errors.username}</p>
-          )}
+    <div className="w-full min-h-screen flex justify-center items-center bg-white p-4">
+      <div className="w-full max-w-md transition-all duration-300 hover:translate-y-[-8px]">
+        <div className="bg-black text-white rounded-xl shadow-2xl p-8 transition-all duration-300 hover:shadow-[0_20px_30px_rgba(0,0,0,0.2)]">
+          <div className="flex flex-col items-center mb-8">
+            <h1
+              className="text-4xl font-bold mb-2"
+              style={{ fontFamily: "jua, sans-serif" }}
+            >
+              Sign Up
+            </h1>
+            <div className="w-16 h-1 bg-white rounded-full"></div>
+          </div>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-6">
+              <label
+                htmlFor="username"
+                className="block text-lg mb-2 font-medium"
+              >
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-white text-white"
+                placeholder="Enter your username"
+                value={user.username}
+                onChange={handleChange}
+              />
+              {errors.username && (
+                <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+              )}
+            </div>
+
+            <div className="mb-6">
+              <label htmlFor="email" className="block text-lg mb-2 font-medium">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-white text-white"
+                placeholder="Enter your email"
+                value={user.email}
+                onChange={handleChange}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+              )}
+            </div>
+
+            <div className="mb-8">
+              <label
+                htmlFor="password"
+                className="block text-lg mb-2 font-medium"
+              >
+                Password
+              </label>
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-white text-white pr-12"
+                placeholder="Enter your password"
+                value={user.password}
+                onChange={handleChange}
+              />
+              <div 
+              className="absolute right-10 top-[68%] translate-y-[-50%] cursor-pointer"
+              onClick={() => {setShowPassword(!showPassword)}}>
+                {showPassword ? (
+                  <FaRegEye size={20} color="#fff" />
+                ) : (
+                  <FaRegEyeSlash size={20} color="#fff" />
+                )}
+              </div>
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+              )}
+            </div>
+
+            <div className="flex justify-center">
+              <button className="bg-white text-black py-3 px-8 rounded-lg font-medium text-lg transition-all duration-300 hover:bg-gray-200 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 cursor-pointer">
+                Submit
+              </button>
+            </div>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-gray-400">
+              Already have an account? <Link href={"/login"} className="hover: text-white">Login</Link>
+            </p>
+          </div>
         </div>
-        <div className="w-full flex flex-col justify-center items-start gap-y-4">
-          <label htmlFor="email" className="text-xl">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            className="w-full md:w-2/3 w-4/5 p-2 rounded-md"
-            placeholder="Enter your email"
-            value={user.email}
-            onChange={handleChange}
-            required
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email}</p>
-          )}
-        </div>
-        <div className="w-full flex flex-col justify-center items-start gap-y-4">
-          <label htmlFor="password" className="text-xl">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            className="w-full md:w-2/3 w-4/5 p-2 rounded-md"
-            placeholder="Enter your password"
-            value={user.password}
-            onChange={handleChange}
-            required
-          />
-          {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password}</p>
-          )}
-        </div>
-        <button className="hover:border-2 hover:border-white w-36 h-12 rounded-lg text-center text-lg cursor-pointer">
-          Submit
-        </button>
-      </form>
+      </div>
     </div>
   );
 };

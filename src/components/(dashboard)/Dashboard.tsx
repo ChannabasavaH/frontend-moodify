@@ -77,7 +77,7 @@ const Dashboard: React.FC = () => {
           <button
             onClick={analyzeEmotion}
             disabled={!image || loading}
-            className={`w-full py-3 rounded-md text-white font-medium ${!image || loading ? 'bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700'
+            className={`w-full py-3 rounded-md text-white font-medium ${!image || loading ? 'bg-gray-400' : 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer'
               }`}
             type='button'>
             {loading ? 'Analyzing...' : 'Analyze Mood & Get Playlists'}

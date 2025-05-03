@@ -186,7 +186,7 @@ const ImageCapture: React.FC<ImageCaptureProps> = ({
       <div className="flex flex-wrap gap-3 mt-4">
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer"
           type="button"
         >
           Upload Image
@@ -202,7 +202,7 @@ const ImageCapture: React.FC<ImageCaptureProps> = ({
         {!isCapturing ? (
           <button
             onClick={startCapture}
-            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 cursor-pointer"
             type="button"
           >
             Use Webcam
@@ -211,14 +211,14 @@ const ImageCapture: React.FC<ImageCaptureProps> = ({
           <>
             <button
               onClick={captureImage}
-              className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+              className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 cursor-pointer"
               type="button"
             >
               Take Photo
             </button>
             <button
               onClick={stopCapture}
-              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 cursor-pointer"
               type="button"
             >
               Cancel
