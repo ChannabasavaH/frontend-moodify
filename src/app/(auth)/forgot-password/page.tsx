@@ -4,11 +4,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
-import { setAccessToken } from "@/utils/auth";
 import { toast } from "react-toastify";
 import { FaRegEyeSlash, FaRegEye } from "react-icons/fa";
-import Link from "next/link";
-
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -18,11 +15,6 @@ const loginSchema = z.object({
 interface UserData {
   email: string;
   password: string;
-}
-
-interface LoginResponse {
-  message: string;
-  accessToken: string;
 }
 
 const Page = () => {
@@ -69,8 +61,8 @@ const Page = () => {
     }
 
     try {
-      const res = await axios.post<LoginResponse>(
-        "http://localhost:8080/api/users/login",
+      await axios.put(
+        "http://localhost:8080/api/users/forgot-password",
         data,
         {
           withCredentials: true,
@@ -79,16 +71,10 @@ const Page = () => {
           },
         }
       );
-
-      if (res.data.accessToken) {
-        // Store the token in localStorage (this triggers the accessTokenUpdated event)
-        setAccessToken(res.data.accessToken);
-
-        // Wait a short moment for the context to update before navigating
-        // This ensures the navbar will have the updated state
+    
         setTimeout(() => {
-          router.push("/dashboard");
-          toast.success("Logged In, successfully!", {
+          router.push("/login");
+          toast.success("Password reset, successfully!", {
             position: "bottom-left",
             style: {
               background: "#4CAF50",
@@ -96,11 +82,11 @@ const Page = () => {
             },
           });
         }, 100);
-      }
+
     } catch (error: any) {
       if (error.response) {
         setGeneralError(error.response.data.message ?? "Login failed");
-        toast.error("Logged In failed! Try again", {
+        toast.error("Resetting password failed! Try again", {
           position: "bottom-left",
           style: {
             background: "#f44336",
@@ -122,7 +108,7 @@ const Page = () => {
               className="text-4xl font-bold mb-2"
               style={{ fontFamily: "jua, sans-serif" }}
             >
-              Login
+              Reset Password
             </h1>
             <div className="w-16 h-1 bg-white rounded-full"></div>
           </div>
@@ -192,18 +178,10 @@ const Page = () => {
                 className="bg-white text-black py-3 px-8 rounded-lg font-medium text-lg transition-all duration-300 hover:bg-gray-200 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 cursor-pointer"
                 disabled={isLoading}
               >
-                {isLoading ? "Logging in..." : "Submit"}
+                {isLoading ? "Resetting password..." : "Submit"}
               </button>
             </div>
           </form>
-
-          <div className="mt-6 text-center">
-            <Link href={"/forgot-password"}>
-            <p className="text-gray-400 hover:text-white transition-colors duration-300 cursor-pointer">
-              Forgot password?
-            </p>
-            </Link>
-          </div>
         </div>
       </div>
     </div>
