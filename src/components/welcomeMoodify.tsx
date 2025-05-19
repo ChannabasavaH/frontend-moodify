@@ -5,7 +5,7 @@ import { GiMusicalNotes } from "react-icons/gi";
 
 const WelcomeMoodify = () => {
     return (
-        <div className='w-full h-full bg-white flex flex-col gap-y-20 p-4'>
+        <div className='w-full h-full bg-#f5f1d1 flex flex-col gap-y-20 p-4'>
             <div className='flex flex-col justify-center items-center gap-y-6'>
                 <h3 className='text-black text-4xl'
                     style={{ fontFamily: "jua, sans-serif" }}>
@@ -16,7 +16,7 @@ const WelcomeMoodify = () => {
                     sentiment curates a unique playlist for you.
                 </p>
             </div>
-            <div className='w-full flex justify-evenly items-center text-black text-xl lg:text-6xl'>
+            <div className='animate-bounce w-full flex justify-evenly items-center text-black text-xl lg:text-6xl'>
                 <GiMusicalNotes />
                 <GiMusicalNotes />
                 <GiMusicalNotes />

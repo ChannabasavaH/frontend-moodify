@@ -3,6 +3,7 @@ import { PlaylistInfo } from "@/types";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { api } from "@/services/auth";
 import { toast } from "react-toastify";
+import { useUser } from "@/context/userContext";
 
 interface PlaylistCardProps {
   playlist: PlaylistInfo & { _id: string };
@@ -13,6 +14,7 @@ const SelectedPlaylist: React.FC<PlaylistCardProps> = ({ playlist, mood }) => {
   const [favoriteStatus, setFavoriteStatus] = useState<{
     [key: string]: boolean;
   }>({});
+  const { fetchUser } = useUser();
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -44,7 +46,10 @@ const SelectedPlaylist: React.FC<PlaylistCardProps> = ({ playlist, mood }) => {
       };
 
       const res = await api.post("/api/favorites", data);
-      console.log(res);
+      console.log(res.data);
+
+      await fetchUser();
+
       toast.success("Added to favorites!", {
         position: "bottom-left",
         style: {

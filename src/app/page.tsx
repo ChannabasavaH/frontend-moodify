@@ -5,15 +5,22 @@ import WelcomeMoodify from "@/components/WelcomeMoodify";
 import ReadyTune from "@/components/ReadyTune";
 import heroImage from "../../public/home-hero-image.jpg";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 
 export default function Home() {
+  const { ref, inView } = useInView({
+    triggerOnce: true, // animate only once
+    threshold: 0.3, // 30% in view
+  });
+
   return (
     <div className="w-full flex flex-col justify-center">
       <div className="w-full h-screen relative">
         <div className="absolute inset-0">
           <Image
             src={heroImage}
-            alt="Person enjoying music with a happy expression"
+            alt="BackgroundHeroImage"
             fill
             priority
             sizes="100vw"
@@ -26,7 +33,13 @@ export default function Home() {
 
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/40 z-10" />
 
-        <div className="absolute inset-0 z-20 flex flex-col justify-center items-start px-8 md:px-16 lg:px-24 max-w-6xl">
+        <motion.div
+          ref={ref}
+          initial={{ opacity: 0, y: 50 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="absolute inset-0 z-20 flex flex-col justify-center items-start px-8 md:px-16 lg:px-24 max-w-6xl"
+        >
           <h1
             className="text-6xl md:text-8xl lg:text-9xl text-[#FFFBDB] mb-4"
             style={{ fontFamily: "jua, sans-serif" }}
@@ -40,17 +53,17 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link href={"/login"}>
+            <Link href="/login">
               <button className="bg-[#FFFBDB] hover:bg-[#f5f1d1] text-black font-bold py-3 px-10 rounded-md text-xl transition-all duration-300 cursor-pointer">
                 Get Started
               </button>
             </Link>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Content sections */}
-      <div className="bg-white mt-8">
+      <div className="bg-[#f5f1d1] pt-8 pb-8">
         <WelcomeMoodify />
         <ReadyTune />
       </div>
