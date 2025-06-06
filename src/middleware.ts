@@ -22,13 +22,17 @@ export const middleware = (req: NextRequest) => {
   ) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
-
+  // Redirect unauthenticated users trying to access protected pages
   if (
-    (!refreshToken && url.pathname.startsWith("/dashboard")) ||
-    url.pathname.startsWith("/user-profile") ||
-    url.pathname.startsWith("/history") ||
-    url.pathname.startsWith("/favorites")
+    !refreshToken &&
+    (
+      url.pathname.startsWith("/dashboard") ||
+      url.pathname.startsWith("/user-profile") ||
+      url.pathname.startsWith("/history") ||
+      url.pathname.startsWith("/favorites")
+    )
   ) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
+
 };
